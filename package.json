@@ -1,0 +1,26 @@
+{
+  "name": "orm",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "orm": "./ci.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baradm100/ORM.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baradm100/ORM/issues"
+  },
+  "homepage": "https://github.com/baradm100/ORM#readme",
+  "dependencies": {
+    "pg": "^7.3.0",
+    "pg-copy-streams": "^1.2.0"
+  }
+}
