@@ -1,26 +1,27 @@
 ORM
 =========================================
 Basic ORM build for and around postgres.
+
 Served with :heart: to the amazing community of node and pg.
 
 ## Table of Contents
-* [Install](#Install)
-* [Features](#Features)
-    * [Models](#Models)
-        * [Creating new model](#Creating-new-model)
-    * [Query](#Query)
-        * [.where](#.where)
-        * [.whereNot](#.whereNot)
-        * [.gatherWhere](#.gatherWhere)
-        * [.gatherWhereNot](#.gatherWhereNot)
-        * [.gatherSelect](#gatherSelect)
+* [Install](#install)
+* [Features](#features)
+    * [Models](#models)
+        * [Creating new model](#creating-new-model)
+    * [Query](#query)
+        * [.where](#where)
+        * [.whereNot](#wherenot)
+        * [.gatherWhere](#gatherwhere)
+        * [.gatherWhereNot](#gatherwherenot)
+        * [.gatherSelect](#gatherselect)
         * [.execute](#execute)
-    * [Migrations](#Migrations)
-    * [Envs](#Envs)
-* [TODOS](#TODOS)
-* [How to Contribute](#How-to-Contribute)
-* [Authors](#Authors)
-* [License](#License)
+    * [Migrations](#migrations)
+    * [Envs](#envs)
+* [TODOS](#todos)
+* [How to Contribute](#how-to-contribute)
+* [Authors](#authors)
+* [License](#license)
 ## Install
 With [npm](https://npmjs.org/) installed, run
 
@@ -215,8 +216,9 @@ Setting up envs:
 5. Profit
 
 ## Authors
-* [Bar Admoni](#https://github.com/baradm100)
+* [Bar Admoni](https://github.com/baradm100)
 
 ## License
 Apache License 2.0, please see [LICENSE](./LICENSE) for details.
+
 Copyright (c) 2017 Bar Admoni
