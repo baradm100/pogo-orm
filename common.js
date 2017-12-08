@@ -21,9 +21,8 @@ function buildStatement(obj, startValueClause = 1) {
     var valueClause = [],
         values = Object.keys(obj).map(key => obj[key]);
 
-    for (var i = startValueClause; i < Object.keys(obj).length + startValueClause; i++) {
+    for (var i = startValueClause; i < Object.keys(obj).length + startValueClause; i++)
         valueClause.push('$' + i);
-    }
 
     return {
         attrs: Object.keys(obj).join(', '),
@@ -46,7 +45,7 @@ function executeQuery(model, query, values, resolve, reject, withCasting = true)
         if (err) // If there is a problem, reject and send error
             reject(err);
 
-        // Everything is nice and dandy! calling relsove with the results (after casting into the model)
+        // Everything is fine and dandy! calling relsove with the results (after casting into the model)
         let result = withCasting ? res.rows.map(row => new model(row)) : res.rows;
         resolve(result);
     });
@@ -74,7 +73,7 @@ Array.prototype.difference = function (other) {
 
 
 /**
- * convert camelcase to Low dash
+ * Convert camelcase to Low dash
  * @returns {String}
  */
 String.prototype.toLowDash = function () {
@@ -82,7 +81,7 @@ String.prototype.toLowDash = function () {
 };
 
 /**
- * convert the low dash last word pluralized
+ * Convert the low dash last word pluralized
  * @returns {String}
  */
 String.prototype.plural = function () {

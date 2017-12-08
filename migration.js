@@ -9,7 +9,10 @@ const {
 } = require('./common');
 
 module.exports = class Migration extends Model {
-    // TODO comment
+    /**
+     * Initilazing procces of the Migration, creating table if not exists then calling callback
+     * @param {Function} callback
+     */
     static init(callback) {
         this.createTable({
             file_name: DBType.string
@@ -23,28 +26,28 @@ module.exports = class Migration extends Model {
         });
     }
 
-    // TODO comment
+    /**
+     * Run migrations one after another
+     */
     static run() {
         let currentMigrations = fs.readdirSync(path.resolve(__dirname, 'migrations')),
             valueClause = [];
 
         if (currentMigrations.length === 0)
-            valueClause.push('NULL');
+            valueClause.push('NULL'); // if there is no migrations in the project's folder
         else
-            for (let i = 1; i <= currentMigrations.length; i++) {
+            for (let i = 1; i <= currentMigrations.length; i++)
                 valueClause.push('$' + i);
-            }
 
         pool.query('SELECT migrations.file_name FROM migrations WHERE migrations.file_name IN (' + valueClause.join(',') + ')', currentMigrations, function (err, res) {
             if (err)
                 throw err;
 
-            let pastMigrations = res.rows.map((row) => {
-                    return row.file_name;
-                }),
-                migrtionsToRun = currentMigrations.difference(pastMigrations),
+            let pastMigrations = res.rows.map((row) => row.file_name),
+                migrtionsToRun = currentMigrations.difference(pastMigrations), // gets the migrations that need to run
                 i = 0;
 
+            // creates function that run on the current mirgration by +i+
             let runOneMigration = function () {
                 if (i < migrtionsToRun.length) {
                     let startTime = Date.now(),
@@ -53,7 +56,7 @@ module.exports = class Migration extends Model {
 
                     console.log('================ Starting: ' + migration + ' ================');
 
-                    execFile('node', [mirgrationPath], (error, stdout, stderr) => {
+                    execFile('node', [mirgrationPath], (error, stdout, _) => {
                         if (error)
                             throw error;
 
@@ -64,8 +67,8 @@ module.exports = class Migration extends Model {
                         Migration.create({
                             file_name: migration
                         }).then(() => {
+                            // only after running the migration and creating new record moving to the next migrations
                             i++;
-
                             runOneMigration();
                         }).catch((err) => {
                             throw err;
@@ -74,19 +77,25 @@ module.exports = class Migration extends Model {
                 }
             };
 
-            runOneMigration(); // Strat run recureive function
+            runOneMigration(); // Start run recureive function
         });
     }
-    // TODO comment
+
+    /**
+     * Initilazing procces of the Migration, creating table if not exists then calling callback
+     * @param {String} migrationName
+     * @returns {String} new migration path
+     */
     static newMigration(migrationName) {
         if (!migrationName)
             throw 'Migration name is missing!';
 
-        let fullMigrationName = (new Date).toISOString().slice(0, 19).replace(/:/g, "") + '_' + migrationName + '.js',
+        let dateByFormat = (new Date).toISOString().slice(0, 19).replace(/:/g, ""), // current date by the format yyyy-MM-ddTmilliseconds
+            fullMigrationName = dateByFormat + '_' + migrationName + '.js',
             mirgrationPath = path.resolve(__dirname, 'migrations', fullMigrationName);
 
-        var a = fs.openSync(mirgrationPath, 'w')
-        fs.closeSync(a); // creating empty file
+        let emptyFile = fs.openSync(mirgrationPath, 'w');
+        fs.closeSync(emptyFile); // creating empty file
 
         console.log("The migration was created!");
         return mirgrationPath;
