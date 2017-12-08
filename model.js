@@ -4,10 +4,6 @@ const {
     buildStatement
 } = require('./common');
 
-// const pg = require('pg');  // TODO add agin
-// const fs = require('fs'); // TODO add agin
-// const copyFrom = require('pg-copy-streams').from; // TODO add agin
-
 let queryData = {};
 
 module.exports = class Model {
@@ -81,19 +77,22 @@ module.exports = class Model {
      * @param {Object} attrs
      * @return {Promise} result .then(data_after_casing)/.catch(error)
      */
-    static where(attrs) { // TODO updated comment
+    static where(attrs) {
         let me = this;
         return new Promise(function (resolve, reject) {
             let query, statement;
 
             if (typeof attrs === 'object') {
+                // attrs are Object, best practise
                 statement = buildStatement(attrs);
                 query = 'SELECT * FROM ' + me.tableName() + ' WHERE (' + statement.attrs + ') = (' + statement.valueClause + ')';
-            } else if (arguments.length == 2) { // programmer call function with value clause
+            } else if (arguments.length == 2) {
+                // calling the function with values (as String) and value clause
                 query = 'SELECT * FROM ' + me.tableName() + ' WHERE (' + arguments[0] + ') = (' + arguments[1] + ')';
             } else {
+                // calling the function with SQL code in String, not recommended at all!
                 let e = new Error();
-                console.warn('ORM: SQL injection can accure, please send read more at the wiki.');
+                console.warn('ORM: SQL injection can accure, please send read more at the README.md file.');
                 console.warn(e.stack);
 
                 query = 'SELECT * FROM ' + me.tableName() + ' WHERE (' + arguments[0] + ')';
@@ -124,8 +123,10 @@ module.exports = class Model {
      * @return {Promise} result .then(data_after_casing)/.catch(error)
      */
     static find(id) {
-        return this.where({
-            id
+        return new Promise(function (resolve, reject) {
+            this.where({
+                id
+            }).then((data) => resolve(data[0])).catch((err) => reject(err));
         });
     }
 
@@ -172,7 +173,7 @@ module.exports = class Model {
             let whereStatement = buildStatement(queryData[me.className()].where),
                 whereNotStatement = buildStatement(queryData[me.className()].whereNot, whereStatement.values.length + 1),
                 select = queryData[me.className()].select,
-                selectStringStatement = select.length > 0 ? select.join('') : '*', // TODO WARNING!!!
+                selectStringStatement = select.length > 0 ? select.join('') : '*',
                 totalValues = whereStatement.values.concat(whereNotStatement.values),
                 totalWhere = '';
 
@@ -200,7 +201,6 @@ module.exports = class Model {
 
             me.clearQueryData(); // remove backed up queryData
 
-            // TODO CAN BE SQL INJECTION!!!
             let query = 'SELECT ' + selectStringStatement + ' FROM ' + me.tableName() + ' WHERE ' + totalWhere;
             executeQuery(me, query, totalValues, resolve, reject);
         });

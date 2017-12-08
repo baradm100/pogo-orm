@@ -22,6 +22,11 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
     printHelp();
 }
 
+
+/**
+ * Creates new model file and create migrations
+ * @param {String} modelName
+ */
 function createModel(modelName) {
     if (!modelName) {
         console.log("Model name is missing");
@@ -58,6 +63,10 @@ function createModel(modelName) {
     console.log('The model was created!')
 }
 
+/**
+ * Creates new migration
+ * @param {String} migrationName
+ */
 function createMigration(migrationName) {
     if (!migrationName) {
         console.log("Migration name is missing");
@@ -67,14 +76,19 @@ function createMigration(migrationName) {
     Migration.newMigration(migrationName);
 }
 
+/**
+ * Run migrations
+ */
 function runMigration() {
     console.log("Migration is running...");
     Migration.run();
 }
 
+/**
+ * Print help
+ */
 function printHelp() {
-    let printText = "";
-    printText += "Usage: orm <action> <params> [options]";
+    let printText = "Usage: orm <action> <params> [options]";
     printText += "\n";
     printText += "\n";
     printText += "Actions:";
