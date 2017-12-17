@@ -46,7 +46,7 @@ function executeQuery(model, query, values, resolve, reject, withCasting = true)
             reject(err);
 
         // Everything is fine and dandy! calling relsove with the results (after casting into the model)
-        let result = withCasting ? res.rows.map(row => new model(row)) : res.rows;
+        let result = withCasting && res.rows ? res.rows.map(row => new model(row)) : res.rows;
         resolve(result);
     });
 }
@@ -66,9 +66,7 @@ module.exports = {
  * @return {Array} the diffrence between 2 arrys
  */
 Array.prototype.difference = function (other) {
-    return this.filter(function (cell) {
-        return other.indexOf(cell) < 0;
-    });
+    return this.filter((cell) => other.indexOf(cell) < 0);
 };
 
 
@@ -81,30 +79,30 @@ String.prototype.toLowDash = function () {
 };
 
 /**
- * Convert the low dash last word pluralized
+ * Pluralizing word, if the Sring is underscored replacing only the last part of the word (after the last '_')
  * @returns {String}
  */
 String.prototype.plural = function () {
     let plural = {
-            '(quiz)$': "$1zes",
-            '^(ox)$': "$1en",
-            '([m|l])ouse$': "$1ice",
-            '(matr|vert|ind)ix|ex$': "$1ices",
-            '(x|ch|ss|sh)$': "$1es",
-            '([^aeiouy]|qu)y$': "$1ies",
-            '(hive)$': "$1s",
-            '(?:([^f])fe|([lr])f)$': "$1$2ves",
-            '(shea|lea|loa|thie)f$': "$1ves",
-            'sis$': "ses",
-            '([ti])um$': "$1a",
-            '(tomat|potat|ech|her|vet)o$': "$1oes",
-            '(bu)s$': "$1ses",
-            '(alias)$': "$1es",
-            '(octop)us$': "$1i",
-            '(ax|test)is$': "$1es",
-            '(us)$': "$1es",
-            '([^s]+)$': "$1s"
-        },
+        '(quiz)$': "$1zes",
+        '^(ox)$': "$1en",
+        '([m|l])ouse$': "$1ice",
+        '(matr|vert|ind)ix|ex$': "$1ices",
+        '(x|ch|ss|sh)$': "$1es",
+        '([^aeiouy]|qu)y$': "$1ies",
+        '(hive)$': "$1s",
+        '(?:([^f])fe|([lr])f)$': "$1$2ves",
+        '(shea|lea|loa|thie)f$': "$1ves",
+        'sis$': "ses",
+        '([ti])um$': "$1a",
+        '(tomat|potat|ech|her|vet)o$': "$1oes",
+        '(bu)s$': "$1ses",
+        '(alias)$': "$1es",
+        '(octop)us$': "$1i",
+        '(ax|test)is$': "$1es",
+        '(us)$': "$1es",
+        '([^s]+)$': "$1s"
+    },
         singular = {
             '(quiz)zes$': "$1",
             '(matr)ices$': "$1ix",
@@ -190,3 +188,7 @@ String.prototype.plural = function () {
 
     return this;
 };
+
+Array.prototype.compact = function () {
+    return this.filter(val => !!val);
+}

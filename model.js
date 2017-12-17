@@ -12,7 +12,73 @@ module.exports = class Model {
      * @param {Object} attrs for exmple {first_name: DBType.text}
      */
     constructor(attrs) {
+        // Adds attrs to the instance
         Object.keys(attrs).forEach(key => this[key] = attrs[key]);
+
+        // Adds relations function to the instance
+        this.addRelationFunctions();
+    }
+
+    /**
+     * Adds relations function to the instance, the function names are the same as the class name (if the relation is hasMany so the name of the class is in plural)
+     */
+    addRelationFunctions() {
+        let me = this,
+            meConstructor = me.constructor;
+
+        const hasMany = meConstructor.hasMany ? meConstructor.hasMany() : [],
+            hasOne = meConstructor.hasOne ? meConstructor.hasOne() : [],
+            belongsTo = meConstructor.belongsTo ? meConstructor.belongsTo() : [],
+            hasAndBelongsToMany = meConstructor.hasAndBelongsToMany ? meConstructor.hasAndBelongsToMany() : [];
+
+        if (meConstructor.hasMany) {
+            // Adds function to represent the hasMany relation
+            meConstructor.hasMany().forEach((relation) => {
+                me[relation.className().plural()] = function () {
+                    let q = {};
+                    q[meConstructor.className().toLowDash() + '_id'] = me.id;
+                    return relation.where(q);
+                };
+            });
+        }
+
+        if (meConstructor.hasOne) {
+            // Adds function to represent the hasOne relation
+            meConstructor.hasOne().forEach((relation) => {
+                me[relation.className()] = function () {
+                    let q = {};
+                    q[meConstructor.className().toLowDash() + '_id'] = me.id;
+                    return relation.where(q);
+                };
+            });
+        }
+
+        if (meConstructor.belongsTo) {
+            // Adds function to represent the belongsTo relation
+            meConstructor.belongsTo().forEach((relation) => {
+                me[relation.className()] = function () {
+                    let q = {};
+                    q.id = me[`${relation.className().toLowDash()}_id`];
+                    return relation.where(q);
+                };
+            });
+        }
+
+        if (meConstructor.hasAndBelongsToMany) {
+            meConstructor.hasAndBelongsToMany().forEach((relation) => {
+                me[relation.className().plural()] = function () {
+                    let joindTable = [table.tableName(), meConstructor.tableName()].sort().join('_'),
+                        q = {};
+                    q[`${meConstructor.className().toLowDash()}_id`] = me.id
+                    let statement = buildStatement(q),
+                        query = `SELECT * FROM ${joindTable} WHERE (${statement.attrs}) = (${statement.valueClause})`;
+
+                    return new Promise(function (resolve, reject) {
+                        executeQuery(meConstructor, query, statement.values, resolve, reject);
+                    });
+                };
+            });
+        }
     }
 
     /**
@@ -28,7 +94,7 @@ module.exports = class Model {
                 reject(new Error("updateAttributes Must Have ID"));
 
             let statement = buildStatement(newAttrs),
-                query = 'UPDATE "' + constructor.tableName() + '" SET (' + statement.attrs + ') = (' + statement.valueClause + ') WHERE ID = $' + (statement.values.length + 1);
+                query = `UPDATE "${constructor.tableName()}" SET (${statement.attrs}) = (${statement.valueClause}) WHERE ID = $${statement.values.length + 1}`;
 
             // Adding id to the statement
             statement.values.push(me.id);
@@ -51,7 +117,7 @@ module.exports = class Model {
                 fullCols.push(key + ' ' + cols[key]);
             });
 
-            let query = 'CREATE TABLE IF NOT EXISTS ' + me.tableName() + '(id SERIAL PRIMARY KEY, ' + fullCols.join(', ') + ')';
+            let query = `CREATE TABLE IF NOT EXISTS  ${me.tableName()} (id SERIAL PRIMARY KEY, ${fullCols.join(', ')})`
             executeQuery(me, query, '', resolve, reject);
         });
     }
@@ -66,7 +132,7 @@ module.exports = class Model {
         return new Promise(function (resolve, reject) {
             // Creating INSERT query
             let statement = buildStatement(attrs),
-                query = 'INSERT INTO "' + me.tableName() + '" (' + statement.attrs + ') VALUES (' + statement.valueClause + ') RETURNING id';
+                query = `INSERT INTO "${me.tableName()}" (${statement.attrs}) VALUES (${statement.valueClause}) RETURNING id`;
 
             executeQuery(me, query, statement.values, resolve, reject);
         });
@@ -85,17 +151,17 @@ module.exports = class Model {
             if (typeof attrs === 'object') {
                 // attrs are Object, best practise
                 statement = buildStatement(attrs);
-                query = 'SELECT * FROM ' + me.tableName() + ' WHERE (' + statement.attrs + ') = (' + statement.valueClause + ')';
+                query = `SELECT * FROM ${me.tableName()} WHERE (${statement.attrs}) = (${statement.valueClause})`;
             } else if (arguments.length == 2) {
                 // calling the function with values (as String) and value clause
-                query = 'SELECT * FROM ' + me.tableName() + ' WHERE (' + arguments[0] + ') = (' + arguments[1] + ')';
+                query = `SELECT * FROM ${me.tableName()} WHERE (${arguments[0]}) = (${arguments[1]})`;
             } else {
                 // calling the function with SQL code in String, not recommended at all!
                 let e = new Error();
                 console.warn('ORM: SQL injection can accure, please send read more at the README.md file.');
                 console.warn(e.stack);
 
-                query = 'SELECT * FROM ' + me.tableName() + ' WHERE (' + arguments[0] + ')';
+                query = `SELECT * FROM ${me.tableName()} WHERE (${arguments[0]})`;
             }
 
             executeQuery(me, query, (statement && statement.values) || '', resolve, reject);
@@ -111,7 +177,7 @@ module.exports = class Model {
         let me = this;
         return new Promise(function (resolve, reject) {
             let statement = buildStatement(attrs),
-                query = 'SELECT * FROM ' + me.tableName() + ' WHERE NOT (' + statement.attrs + ') = (' + statement.valueClause + ')';
+                query = `SELECT * FROM ${me.tableName()} WHERE NOT (${statement.attrs}) = (${statement.valueClause})`;
 
             executeQuery(me, query, statement.values, resolve, reject);
         });
@@ -123,13 +189,15 @@ module.exports = class Model {
      * @return {Promise} result .then(data_after_casing)/.catch(error)
      */
     static find(id) {
+        let me = this;
         return new Promise(function (resolve, reject) {
-            this.where({
+            me.where({
                 id
             }).then((data) => resolve(data[0])).catch((err) => reject(err));
         });
     }
 
+    // Gather Query:
     /**
      * Add attrs to the where
      * @param {Object} attrs
@@ -162,6 +230,36 @@ module.exports = class Model {
     }
 
     /**
+     * Adds (inner right) joins for the tables using releation between models (hasOne, hasMany, belongsTo, hasAndBelongsToMany)
+     * @param {Model|String} tables - can be sub-class of model or 'join' String
+     */
+    static joins(...tables) {
+        this.standertizeQueryData();
+
+        const hasMany = this.hasMany ? this.hasMany() : [],
+            hasOne = this.hasOne ? this.hasOne() : [],
+            belongsTo = this.belongsTo ? this.belongsTo() : [],
+            hasAndBelongsToMany = this.hasAndBelongsToMany ? this.hasAndBelongsToMany() : [];
+        let me = this;
+
+        tables.forEach((table) => {
+            let joinQuery;
+            if (typeof table === 'string')
+                joinQuery = table;
+            else if (hasOne.includes(table) || hasMany.includes(table))
+                joinQuery = `JOIN ON ${me.tableName()}.id = ${table.tableName()}.${me.className().toLowDash()}_id`;
+            else if (belongsTo.includes(table))
+                joinQuery = `JOIN ON ${table.tableName()}.id = ${me.tableName()}.${table.className().toLowDash()}_id`;
+            else if (hasAndBelongsToMany.includes(table)) {
+                let joindTable = [table.tableName(), me.tableName()].sort().join('_');
+                joinQuery = `JOIN ON ${me.tableName()}.id = ${joindTable}.${me.className().toLowDash()}_id`;
+            }
+
+            queryData[this.className()].joins.push(joinQuery);
+        });
+    }
+
+    /**
      * Run the backed up +queryData+ (select, where, whereNot)
      * @return {Promise}
      */
@@ -175,14 +273,11 @@ module.exports = class Model {
                 select = queryData[me.className()].select,
                 selectStringStatement = select.length > 0 ? select.join('') : '*',
                 totalValues = whereStatement.values.concat(whereNotStatement.values),
+                joins = queryData[me.className()].joins.compact().joins(' AND '),
                 totalWhere = '';
 
             // Adding where to totalWhere
-            whereStatement.attrs.split(', ').filter(function (el) {
-                return el.length != 0
-            }).forEach(function (attr, index) {
-
-
+            whereStatement.attrs.split(', ').filter((el) => el.length != 0).forEach(function (attr, index) {
                 if (totalWhere.length > 0)
                     totalWhere += ' AND ';
 
@@ -190,18 +285,20 @@ module.exports = class Model {
             });
 
             // Adding where not to totalWhere
-            whereNotStatement.attrs.split(', ').filter(function (el) {
-                return el.length != 0
-            }).forEach(function (attr, index) {
+            whereNotStatement.attrs.split(', ').filter((el) => el.length != 0).forEach(function (attr, index) {
                 if (totalWhere.length > 0)
                     totalWhere += ' AND ';
 
                 totalWhere += ' NOT ' + attr + ' = ' + whereNotStatement.valueClause.split(', ')[index];
             });
 
+            // if the +totalWhere+ is empty then get all the data!!
+            if (totalWhere.length == 0)
+                totalWhere = '1 = 1';
+
             me.clearQueryData(); // remove backed up queryData
 
-            let query = 'SELECT ' + selectStringStatement + ' FROM ' + me.tableName() + ' WHERE ' + totalWhere;
+            let query = `SELECT ${selectStringStatement} ${joins} FROM ${me.tableName()} WHERE ${totalWhere}`;
             executeQuery(me, query, totalValues, resolve, reject);
         });
     }
@@ -222,6 +319,7 @@ module.exports = class Model {
         queryData[this.className()].where = queryData[this.className()].where || {};
         queryData[this.className()].whereNot = queryData[this.className()].whereNot || {};
         queryData[this.className()].select = queryData[this.className()].select || [];
+        queryData[this.className()].joins = queryData[this.className()].joins || [];
     }
 
     /**
