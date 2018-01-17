@@ -95,7 +95,7 @@ module.exports = class User extends Model {
 
 ### Relations
 Relations between tables or models are a key in relational databases.
-The ORM can handle and help the developer with a few types of relations.
+The ORM can handle and help the developer with a few types of relations by adding functions that call relevant where.
 
 Types of relations:
 * hasOne
@@ -246,7 +246,7 @@ User.joins(Comment, 'JOIN ON users.id = purchases.customer_id')
 // The joins QueryData is: ['JOIN ON users.id = comments.user_id', 'JOIN ON users.id = purchases.customer_id']
 ```
 #### .execute
-Executes the query, return ```Promise``` and clears the backed up queryData:
+Executes the query, return ```Promise``` and clears the backed up queryData (with where, select and joins):
 ```javascript
 User.execute().then((res) =>{
     console.log(res);
