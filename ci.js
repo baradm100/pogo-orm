@@ -55,9 +55,9 @@ function createModel(modelName) {
     basicMigrationCode += "\n";
     basicMigrationCode += "const DBType = require('orm').DBType;";
     basicMigrationCode += "\n";
-    basicMigrationCode += "const " + modelName + " = require('.models/" + modelName + "'); // TODO Add columns!";
+    basicMigrationCode += "const " + modelName + " = require('.models/" + modelName + "');";
     basicMigrationCode += "\n\n";
-    basicMigrationCode += modelName + ".createTable({});";
+    basicMigrationCode += modelName + ".createTable({}); // TODO Add columns!";
     fs.writeFileSync(mirgrationPath, basicMigrationCode);
 
     console.log('The model was created!')
