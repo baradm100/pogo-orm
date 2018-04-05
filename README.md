@@ -5,6 +5,7 @@ Basic ORM build for and around postgres.
 Served with :heart: to the amazing community of node and pg.
 
 ## Table of Contents
+
 * [Install](#install)
 * [Features](#features)
     * [Models](#models)
@@ -25,6 +26,7 @@ Served with :heart: to the amazing community of node and pg.
     * [DB Config](#db-config)
 * [TODOS](#todos)
 * [How to Contribute](#how-to-contribute)
+* [Links](#links)
 * [Authors](#authors)
 * [Thanks](#thanks)
 * [License](#license)
@@ -315,7 +317,7 @@ $ orm migration
 Using the DB config file the programer can separate different environments.
 The config file always should be ```./config/db.json```.
 
-For exmple:
+For example:
 ```JSON
 {
     "development": {
@@ -334,6 +336,7 @@ For exmple:
 ```
 
 Expected keys (using pg by brainc, read more [here](https://node-postgres.com/api/pool)):
+
 * ```user``` - user name
 * ```password``` - user's password (**NEVER PUBLISH YOUR PASSWORDS**)
 * ```database``` - what database to pull from
@@ -341,16 +344,17 @@ Expected keys (using pg by brainc, read more [here](https://node-postgres.com/ap
 * ```port``` - what port to connect to
 * ```connectionString``` - all the configurations put in one string (for example: ```postgresql://dbuser:secretpassword@database.server.com:3211/mydb```)
 * ```connectionTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client
-* ```idleTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client before it is disconnected from the backend and discarded
+* ```idleTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client before it is disconnected from the back-end and discarded
 * ```max``` - maximum number of clients the pool should contain
 
 ## TODOS
+
 * [ ] Example project.
 * [ ] Tests.
 * [x] Inner joins.
 * [ ] Left joins.
 * [ ] WhereOr.
-* [ ]Check and prevent SQL injection.
+* [ ] Check and prevent SQL injection.
 * [ ] Add more features from pg like:
     * Notifications using ```LISTEN``` and ```NOTIFY```.
     * Copying data using ```COPY FROM``` and ```COPY``` TO.
@@ -363,6 +367,10 @@ Expected keys (using pg by brainc, read more [here](https://node-postgres.com/ap
 3. Open PR
 4. ?
 5. Profit
+
+## Links
+* [npm](https://www.npmjs.com/package/pogo-orm)
+* [GitHub](https://github.com/baradm100/pogo-orm)
 
 ## Authors
 * [Bar Admoni](https://github.com/baradm100)
