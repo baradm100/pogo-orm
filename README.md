@@ -315,7 +315,7 @@ $ orm migration
 Using the DB config file the programer can separate different environments.
 The config file always should be ```./config/db.json```.
 
-For exmple:
+For example:
 ```JSON
 {
     "development": {
@@ -334,6 +334,7 @@ For exmple:
 ```
 
 Expected keys (using pg by brainc, read more [here](https://node-postgres.com/api/pool)):
+
 * ```user``` - user name
 * ```password``` - user's password (**NEVER PUBLISH YOUR PASSWORDS**)
 * ```database``` - what database to pull from
@@ -341,10 +342,11 @@ Expected keys (using pg by brainc, read more [here](https://node-postgres.com/ap
 * ```port``` - what port to connect to
 * ```connectionString``` - all the configurations put in one string (for example: ```postgresql://dbuser:secretpassword@database.server.com:3211/mydb```)
 * ```connectionTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client
-* ```idleTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client before it is disconnected from the backend and discarded
+* ```idleTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client before it is disconnected from the back-end and discarded
 * ```max``` - maximum number of clients the pool should contain
 
 ## TODOS
+
 * [ ] Example project.
 * [ ] Tests.
 * [x] Inner joins.
