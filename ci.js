@@ -12,7 +12,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
     } else if (process.argv[3] === "new") {
         Migration.init(() => createMigration(process.argv[4]));
     } else if (!process.argv[3]) {
-        // Defults to run the migration
+        // Defaults to run the migration
         Migration.init(runMigration);
     }
 } else if (process.argv[2] === "model" && process.argv[3] === "new") {
@@ -48,7 +48,7 @@ function createModel(modelName) {
     fs.writeFileSync(path.resolve(__dirname, 'models', modelName + '.js'), basicModelCode);
 
     // Creating basic migration
-    let mirgrationPath = Migration.newMigration('create_' + modelName);
+    let migrationPath = Migration.newMigration('create_' + modelName);
     let basicMigrationCode = "// Migration that was auto created by the ORM";
     basicMigrationCode += "\n";
     basicMigrationCode += "const Model = require('orm').Model;";
@@ -58,7 +58,7 @@ function createModel(modelName) {
     basicMigrationCode += "const " + modelName + " = require('.models/" + modelName + "');";
     basicMigrationCode += "\n\n";
     basicMigrationCode += modelName + ".createTable({}); // TODO Add columns!";
-    fs.writeFileSync(mirgrationPath, basicMigrationCode);
+    fs.writeFileSync(migrationPath, basicMigrationCode);
 
     console.log('The model was created!')
 }

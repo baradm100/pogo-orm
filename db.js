@@ -20,7 +20,7 @@ pool.on('error', function (err, client) {
 
 //export the query method for passing queries to the pool
 module.exports.query = function (text, values, callback) {
-    if (env == 'development')
+    if (env === 'development')
         console.log('query:', text, values);
 
     return pool.query(text, values, callback);
@@ -28,7 +28,7 @@ module.exports.query = function (text, values, callback) {
 
 //export the query method for passing queries to the pool using new connection
 module.exports.queryWithConnect = function (text, values, callback) {
-    if (env == 'development')
+    if (env === 'development')
         console.log('query:', text, values);
 
     pool.connect(function (err, client, done) {

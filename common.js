@@ -5,16 +5,15 @@ const DBType = {
     timestamp: 'TIMESTAMP',
     bool: 'BOOLEAN',
     int: 'INTEGER'
-}
-
+};
 
 /**
  * Build query statement for pg
  * @param {Object} obj
  * @param {Number} startValueClause optional, if user adds more value clause before
  * @return {Object} 
- * * attrs: obj keys, for exemple: 'a'
- * * valueClause: creates value cluase '$1'
+ * * attrs: obj keys, for example: 'a'
+ * * valueClause: creates value clause '$1'
  * * values: [1]
  */
 function buildStatement(obj, startValueClause = 1) {
@@ -29,7 +28,7 @@ function buildStatement(obj, startValueClause = 1) {
         valueClause: valueClause.join(', '),
         values: values
     };
-};
+}
 
 /**
  * Execute query for Promise
@@ -45,7 +44,7 @@ function executeQuery(model, query, values, resolve, reject, withCasting = true)
         if (err) // If there is a problem, reject and send error
             reject(err);
 
-        // Everything is fine and dandy! calling relsove with the results (after casting into the model)
+        // Everything is fine and dandy! calling resole with the results (after casting into the model)
         let result = withCasting && res.rows ? res.rows.map(row => new model(row)) : res.rows;
         resolve(result);
     });
@@ -58,12 +57,12 @@ module.exports = {
 };
 
 
-// Prototyping commenly use functions
+// Prototyping commonly use functions
 
 /**
- * Returns the diffrence between 2 arrys
+ * Returns the difference between 2 arrays
  * @param {Array} other
- * @return {Array} the diffrence between 2 arrys
+ * @return {Array} the difference between 2 arrays
  */
 Array.prototype.difference = function (other) {
     return this.filter((cell) => other.indexOf(cell) < 0);
@@ -71,7 +70,7 @@ Array.prototype.difference = function (other) {
 
 
 /**
- * Convert camelcase to Low dash
+ * Convert camel-case to Low dash
  * @returns {String}
  */
 String.prototype.toLowDash = function () {
@@ -79,30 +78,31 @@ String.prototype.toLowDash = function () {
 };
 
 /**
- * Pluralizing word, if the Sring is underscored replacing only the last part of the word (after the last '_')
+ * Pluralizing word, if the String is underscored replacing only the last part of the word (after the last '_')
+ * This function was originally written by @pmrotule at: https://stackoverflow.com/questions/27194359/javascript-pluralize-a-string
  * @returns {String}
  */
 String.prototype.plural = function () {
     let plural = {
-        '(quiz)$': "$1zes",
-        '^(ox)$': "$1en",
-        '([m|l])ouse$': "$1ice",
-        '(matr|vert|ind)ix|ex$': "$1ices",
-        '(x|ch|ss|sh)$': "$1es",
-        '([^aeiouy]|qu)y$': "$1ies",
-        '(hive)$': "$1s",
-        '(?:([^f])fe|([lr])f)$': "$1$2ves",
-        '(shea|lea|loa|thie)f$': "$1ves",
-        'sis$': "ses",
-        '([ti])um$': "$1a",
-        '(tomat|potat|ech|her|vet)o$': "$1oes",
-        '(bu)s$': "$1ses",
-        '(alias)$': "$1es",
-        '(octop)us$': "$1i",
-        '(ax|test)is$': "$1es",
-        '(us)$': "$1es",
-        '([^s]+)$': "$1s"
-    },
+            '(quiz)$': "$1zes",
+            '^(ox)$': "$1en",
+            '([m|l])ouse$': "$1ice",
+            '(matr|vert|ind)ix|ex$': "$1ices",
+            '(x|ch|ss|sh)$': "$1es",
+            '([^aeiouy]|qu)y$': "$1ies",
+            '(hive)$': "$1s",
+            '(?:([^f])fe|([lr])f)$': "$1$2ves",
+            '(shea|lea|loa|thie)f$': "$1ves",
+            'sis$': "ses",
+            '([ti])um$': "$1a",
+            '(tomat|potat|ech|her|vet)o$': "$1oes",
+            '(bu)s$': "$1ses",
+            '(alias)$': "$1es",
+            '(octop)us$': "$1i",
+            '(ax|test)is$': "$1es",
+            '(us)$': "$1es",
+            '([^s]+)$': "$1s"
+        },
         singular = {
             '(quiz)zes$': "$1",
             '(matr)ices$': "$1ix",
@@ -168,7 +168,7 @@ String.prototype.plural = function () {
 
         if (pattern.test(lastPart)) {
             let newLastPart = lastPart.replace(pattern, replace); // pluralizing last part of the string
-            // returns full string and newly plurized string concatanated be "_" if needed
+            // returns full string and newly pluralized string concatenated be "_" if needed
             return (lastPart == this) ? newLastPart : this.split('_').slice(0, -1).join('_') + '_' + newLastPart;
         }
 
@@ -180,7 +180,7 @@ String.prototype.plural = function () {
 
         if (pattern.test(lastPart)) {
             let newLastPart = lastPart.replace(pattern, plural[reg]); // pluralizing last part of the string
-            // returns full string and newly plurized string concatanated be "_" if needed
+            // returns full string and newly pluralized string concatenated be "_" if needed
             return (lastPart == this) ? newLastPart : this.split('_').slice(0, -1).join('_') + '_' + newLastPart;
         }
 
@@ -191,4 +191,4 @@ String.prototype.plural = function () {
 
 Array.prototype.compact = function () {
     return this.filter(val => !!val);
-}
+};

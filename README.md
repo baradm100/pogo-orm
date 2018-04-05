@@ -56,11 +56,14 @@ The commend creates the new model and migration to create the new model's table.
 For the next examples we will be creating "User" model.
 ##### Creating the User model
 Let's create "User" model, for doing that we need to run the following command:
+
 ```
 $ orm model new User
 ```
+
 ##### The model itself
 Let's look in the model's code:
+
 ```javascript
 // Requiring the relevant packages
 const bcrypt = require('bcryptjs'); // package that hashes passwords
@@ -137,13 +140,16 @@ module.exports = class User extends Model {
 
 User.find(1).then((user) => user.Comments)
 ```
+
 The SQL that will be generated:
+
 ```sql
 SELECT * FROM comments WHERE user_id = 1
 ```
 
 #### belongsTo
 Adds function for the model named as the plural of the relation model.
+
 ```javascript
 const Model = require('orm').Model;
 const Rank = require('./rank');
@@ -164,6 +170,7 @@ SELECT * FROM ranks WHERE id = 10 -- user.rank_id
 
 #### hasAndBelongsToMany
 Adds function for the model named as the plural of the relation model.
+
 ```javascript
 const Model = require('orm').Model;
 const Repo = require('./repo');
@@ -175,7 +182,9 @@ module.exports = class User extends Model {
 
 User.find(1).then((user) => user.Repos)
 ```
+
 The SQL that will be generated:
+
 ```sql
 SELECT * FROM users_repos WHERE user_id = 1
 ```
@@ -194,6 +203,7 @@ The ORM creates and executes the query by generating value clause (so no risk fo
 
 ##### .where
 Creates where query, can receive Object (best practice) and return ```Promise```, for example:
+
 ```javascript
 User.where({name: 'Bar', is_awesome: true}).then((res) => {
     console.log(res);
@@ -201,13 +211,17 @@ User.where({name: 'Bar', is_awesome: true}).then((res) => {
     throw err
 });
 ```
+
 The SQL that was generated:
+
 ```SQL
 SELECT * FROM 'users' WHERE name="Bar" AND is_awesome="t"
 ```
 
 #### .whereNot
+
 Creates where not query, can receive Object (best practice) and return ```Promise```, for example:
+
 ```javascript
 User.whereNot({name: 'Bar',is_awesome: true}).then((res) => {
     console.log(res);
@@ -215,43 +229,55 @@ User.whereNot({name: 'Bar',is_awesome: true}).then((res) => {
     throw err
 });
 ```
+
 The SQL that was generated:
+
 ```SQL
 SELECT * FROM 'users' WHERE NOT name="Bar" AND NOT is_awesome="t"
 ```
 
 #### Gather Query
 You can gather query to allow you the create complex queries, to run the query you need to call ```.execute()```.
+
 #### .gatherWhere
 Adds to the class' gathered query where
+
 ```javascript
 User.gatherWhere({name: 'Barrrr'});
 User.gatherWhere({is_awesome: true});
 User.gatherWhere({name: 'Bar'});
 // The where QueryData is: {name: 'Bar', is_awesome: true}
 ```
+
 #### .gatherWhereNot
 Adds to the class' gathered query whereNot
+
 ```javascript
 User.gatherWhereNot({name: 'Barrrr'});
 User.gatherWhereNot({is_awesome: false});
 User.gatherWhereNot({name: 'Aviv'});
 // The whereNot QueryData is: {name: 'Aviv', is_awesome: false}
 ```
+
 #### .gatherSelect
 Adds to the class' gathered query select
+
 ```javascript
 User.gatherSelect(['id']);
 // The select QueryData is: ['id']
 ```
+
 #### .joins
 Adds joins (inner right join) to the query
+
 ```javascript
 User.joins(Comment, 'JOIN ON users.id = purchases.customer_id')
 // The joins QueryData is: ['JOIN ON users.id = comments.user_id', 'JOIN ON users.id = purchases.customer_id']
 ```
+
 #### .execute
 Executes the query, return ```Promise``` and clears the backed up queryData (with where, select and joins):
+
 ```javascript
 User.execute().then((res) =>{
     console.log(res);
@@ -259,20 +285,26 @@ User.execute().then((res) =>{
     throw err
 });
 ```
+
 The SQL that was generated:
+
 ```SQL
 SELECT id FROM 'users' WHERE Name="Bar" AND is_awesome="t" AND NOT name="Aviv" AND NOT is_awesome="f"
 ```
+
 #### .clearQueryData
 Manually clears the class backup queries.
->Best practice is not to use this. When running .execute the queryData is automatically cleared
+> Best practice is not to use this. When running .execute the queryData is automatically cleared
 
 ### Migrations
 Create new migration (will create new file with the time of creation and migration name):
+
 ```
 $ orm migration new migration_name
 ```
+
 Running migration (will run only the ones that haven't been executed before):
+
 ```
 $ orm migration run
 $ # OR just
@@ -280,8 +312,8 @@ $ orm migration
 ```
 
 ## DB Config:
-Using the DB config gile the programer can saparete diffrent envs.
-The config file allways should be ```./config/db.json```.
+Using the DB config file the programer can separate different environments.
+The config file always should be ```./config/db.json```.
 
 For exmple:
 ```JSON
@@ -300,28 +332,30 @@ For exmple:
     }
 }
 ```
-Exepted keys (using pg by brainc, read more [here](https://node-postgres.com/api/pool)):
+
+Expected keys (using pg by brainc, read more [here](https://node-postgres.com/api/pool)):
 * ```user``` - user name
 * ```password``` - user's password (**NEVER PUBLISH YOUR PASSWORDS**)
 * ```database``` - what database to pull from
 * ```host``` - what host to connect to
 * ```port``` - what port to connect to
-* ```connectionString``` - all the configrutions put in one string (for exmple: ```postgresql://dbuser:secretpassword@database.server.com:3211/mydb```)
+* ```connectionString``` - all the configurations put in one string (for example: ```postgresql://dbuser:secretpassword@database.server.com:3211/mydb```)
 * ```connectionTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client
 * ```idleTimeoutMillis``` - number of milliseconds to wait before timing out when connecting a new client before it is disconnected from the backend and discarded
 * ```max``` - maximum number of clients the pool should contain
 
 ## TODOS
-* Example project.
-* Tests.
-* Left joins.
-* WhereOr.
-* Check and prevent SQL injection.
-* Add more features from pg like:
+* [ ] Example project.
+* [ ] Tests.
+* [x] Inner joins.
+* [ ] Left joins.
+* [ ] WhereOr.
+* [ ]Check and prevent SQL injection.
+* [ ] Add more features from pg like:
     * Notifications using ```LISTEN``` and ```NOTIFY```.
     * Copying data using ```COPY FROM``` and ```COPY``` TO.
     * JSON
-* More data types (read more on pg data types on the pg documentation [here](https://www.postgresql.org/docs/9.5/static/datatype.html)).
+* [ ] More data types (read more on pg data types on the pg documentation [here](https://www.postgresql.org/docs/9.5/static/datatype.html)).
 
 ## How to Contribute
 1. Fork
