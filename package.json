@@ -1,25 +1,28 @@
 {
-  "name": "orm",
-  "version": "0.1.0",
-  "description": "",
+  "name": "pogo-orm",
+  "version": "1.0.0",
+  "description": "Basic ORM build for and around postgres and node",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "bin": {
-    "orm": "./ci.js"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baradm100/ORM.git"
+    "url": "git+https://github.com/baradm100/pogo-orm.git"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "pogo-orm",
+    "pg",
+    "orm",
+    "postgres"
+  ],
+  "author": "Bar Admoni",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/baradm100/ORM/issues"
+    "url": "https://github.com/baradm100/pogo-orm/issues"
   },
-  "homepage": "https://github.com/baradm100/ORM#readme",
+  "homepage": "https://github.com/baradm100/pogo-orm#readme",
   "dependencies": {
-    "pg": "^7.3.0"
+    "pg": "^7.4.1"
   }
 }

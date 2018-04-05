@@ -1,4 +1,4 @@
-ORM
+Pogo-ORM
 =========================================
 Basic ORM build for and around postgres.
 
@@ -28,10 +28,11 @@ Served with :heart: to the amazing community of node and pg.
 * [Authors](#authors)
 * [Thanks](#thanks)
 * [License](#license)
+
 ## Install
 With [npm](https://npmjs.org/) installed, run
 
-```
+```bash
 $ npm install orm
 ```
 
@@ -116,7 +117,9 @@ module.exports = class User extends Model {
 
 User.find(1).then((user) => user.Name)
 ```
+
 The SQL that will be generated:
+
 ```sql
 SELECT * FROM names WHERE user_id = 1
 ```
@@ -152,7 +155,9 @@ module.exports = class User extends Model {
 
 User.find(1).then((user) => user.Rank)
 ```
+
 The SQL that will be generated:
+
 ```sql
 SELECT * FROM ranks WHERE id = 10 -- user.rank_id
 ```
@@ -334,4 +339,4 @@ Big thanks for [@brianc](https://github.com/brianc), this pakage is based on [no
 ## License
 Apache License 2.0, please see [LICENSE](./LICENSE) for details.
 
-Copyright (c) 2017 Bar Admoni
+Copyright (c) 2017 Bar Admoni.
