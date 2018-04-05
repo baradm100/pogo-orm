@@ -5,6 +5,7 @@ Basic ORM build for and around postgres.
 Served with :heart: to the amazing community of node and pg.
 
 ## Table of Contents
+
 * [Install](#install)
 * [Features](#features)
     * [Models](#models)
@@ -25,6 +26,7 @@ Served with :heart: to the amazing community of node and pg.
     * [DB Config](#db-config)
 * [TODOS](#todos)
 * [How to Contribute](#how-to-contribute)
+* [Links](#links)
 * [Authors](#authors)
 * [Thanks](#thanks)
 * [License](#license)
@@ -352,7 +354,7 @@ Expected keys (using pg by brainc, read more [here](https://node-postgres.com/ap
 * [x] Inner joins.
 * [ ] Left joins.
 * [ ] WhereOr.
-* [ ]Check and prevent SQL injection.
+* [ ] Check and prevent SQL injection.
 * [ ] Add more features from pg like:
     * Notifications using ```LISTEN``` and ```NOTIFY```.
     * Copying data using ```COPY FROM``` and ```COPY``` TO.
@@ -365,6 +367,10 @@ Expected keys (using pg by brainc, read more [here](https://node-postgres.com/ap
 3. Open PR
 4. ?
 5. Profit
+
+## Links
+* [npm](https://www.npmjs.com/package/pogo-orm)
+* [GitHub](https://github.com/baradm100/pogo-orm)
 
 ## Authors
 * [Bar Admoni](https://github.com/baradm100)
