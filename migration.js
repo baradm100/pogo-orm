@@ -10,7 +10,7 @@ const {
 
 module.exports = class Migration extends Model {
     /**
-     * Initilazing procces of the Migration, creating table if not exists then calling callback
+     * Initialling process of the Migration, creating table if not exists then calling callback
      * @param {Function} callback
      */
     static init(callback) {
@@ -44,23 +44,23 @@ module.exports = class Migration extends Model {
                 throw err;
 
             let pastMigrations = res.rows.map((row) => row.file_name),
-                migrtionsToRun = currentMigrations.difference(pastMigrations), // gets the migrations that need to run
+                migrationsToRun = currentMigrations.difference(pastMigrations), // gets the migrations that need to run
                 i = 0;
 
-            // creates function that run on the current mirgration by +i+
+            // creates function that run on the current migration by +i+
             let runOneMigration = function () {
-                if (i < migrtionsToRun.length) {
+                if (i < migrationsToRun.length) {
                     let startTime = Date.now(),
-                        migration = migrtionsToRun[i],
-                        mirgrationPath = path.resolve(__dirname, 'migrations', migration);
+                        migration = migrationsToRun[i],
+                        migrationPath = path.resolve(__dirname, 'migrations', migration);
 
                     console.log('================ Starting: ' + migration + ' ================');
 
-                    execFile('node', [mirgrationPath], (error, stdout, _) => {
+                    execFile('node', [migrationPath], (error, stdout, _) => {
                         if (error)
                             throw error;
 
-                        console.log(stdout); // outputing migration output
+                        console.log(stdout); // outputting migration output
 
                         console.log('================ Done: ' + migration + ' In ' + (Date.now() - startTime) / 1000 + ' sec. ================');
 
@@ -77,12 +77,12 @@ module.exports = class Migration extends Model {
                 }
             };
 
-            runOneMigration(); // Start run recureive function
+            runOneMigration(); // Start run recursive function
         });
     }
 
     /**
-     * Initilazing procces of the Migration, creating table if not exists then calling callback
+     * Initialling process of the Migration, creating table if not exists then calling callback
      * @param {String} migrationName
      * @returns {String} new migration path
      */
@@ -92,12 +92,12 @@ module.exports = class Migration extends Model {
 
         let dateByFormat = (new Date).toISOString().slice(0, 19).replace(/:/g, ""), // current date by the format yyyy-MM-ddTmilliseconds
             fullMigrationName = dateByFormat + '_' + migrationName + '.js',
-            mirgrationPath = path.resolve(__dirname, 'migrations', fullMigrationName);
+            migrationPath = path.resolve(__dirname, 'migrations', fullMigrationName);
 
-        let emptyFile = fs.openSync(mirgrationPath, 'w');
+        let emptyFile = fs.openSync(migrationPath, 'w');
         fs.closeSync(emptyFile); // creating empty file
 
         console.log("The migration was created!");
-        return mirgrationPath;
+        return migrationPath;
     }
 }

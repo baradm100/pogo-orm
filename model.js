@@ -1,4 +1,3 @@
-const pool = require('./db');
 const {
     executeQuery,
     buildStatement
@@ -9,7 +8,7 @@ let queryData = {};
 module.exports = class Model {
     /**
      * Creates instance of the class
-     * @param {Object} attrs for exmple {first_name: DBType.text}
+     * @param {Object} attrs for example {first_name: DBType.text}
      */
     constructor(attrs) {
         // Adds attrs to the instance
@@ -67,11 +66,11 @@ module.exports = class Model {
         if (meConstructor.hasAndBelongsToMany) {
             meConstructor.hasAndBelongsToMany().forEach((relation) => {
                 me[relation.className().plural()] = function () {
-                    let joindTable = [table.tableName(), meConstructor.tableName()].sort().join('_'),
+                    let joinedTable = [table.tableName(), meConstructor.tableName()].sort().join('_'),
                         q = {};
-                    q[`${meConstructor.className().toLowDash()}_id`] = me.id
+                    q[`${meConstructor.className().toLowDash()}_id`] = me.id;
                     let statement = buildStatement(q),
-                        query = `SELECT * FROM ${joindTable} WHERE (${statement.attrs}) = (${statement.valueClause})`;
+                        query = `SELECT * FROM ${joinedTable} WHERE (${statement.attrs}) = (${statement.valueClause})`;
 
                     return new Promise(function (resolve, reject) {
                         executeQuery(meConstructor, query, statement.values, resolve, reject);
@@ -106,7 +105,7 @@ module.exports = class Model {
 
     /**
      * Creates new table for the model
-     * @param {Object} cols for exmple {first_name: DBType.text}
+     * @param {Object} cols for example {first_name: DBType.text}
      * @return {Promise}
      */
     static createTable(cols) {
@@ -123,7 +122,7 @@ module.exports = class Model {
     }
 
     /**
-     * Create new row with the relevent attrs
+     * Create new row with the relevant attrs
      * @param {Object} attrs
      * @return {Promise} .then(data_after_casing)/.catch(error)
      */
@@ -139,7 +138,7 @@ module.exports = class Model {
     }
 
     /**
-     * Basic where with the relevent attrs
+     * Basic where with the relevant attrs
      * @param {Object} attrs
      * @return {Promise} result .then(data_after_casing)/.catch(error)
      */
@@ -149,7 +148,7 @@ module.exports = class Model {
             let query, statement;
 
             if (typeof attrs === 'object') {
-                // attrs are Object, best practise
+                // attrs are Object, best practice
                 statement = buildStatement(attrs);
                 query = `SELECT * FROM ${me.tableName()} WHERE (${statement.attrs}) = (${statement.valueClause})`;
             } else if (arguments.length == 2) {
@@ -158,7 +157,7 @@ module.exports = class Model {
             } else {
                 // calling the function with SQL code in String, not recommended at all!
                 let e = new Error();
-                console.warn('ORM: SQL injection can accure, please send read more at the README.md file.');
+                console.warn('ORM: SQL injection can occur, please send read more at the README.md file.');
                 console.warn(e.stack);
 
                 query = `SELECT * FROM ${me.tableName()} WHERE (${arguments[0]})`;
@@ -169,7 +168,7 @@ module.exports = class Model {
     }
 
     /**
-     * Basic where not with the relevent attrs
+     * Basic where not with the relevant attrs
      * @param {Object} attrs
      * @return {Promise} result .then(data_after_casing)/.catch(error)
      */
@@ -203,7 +202,7 @@ module.exports = class Model {
      * @param {Object} attrs
      */
     static gatherWhere(attrs) {
-        this.standertizeQueryData();
+        this.standardizeQueryData();
 
         queryData[this.className()].where = Object.assign(queryData[this.className()].where, attrs);
     }
@@ -214,7 +213,7 @@ module.exports = class Model {
      * @param {Object} attrs
      */
     static gatherWhereNot(attrs) {
-        this.standertizeQueryData();
+        this.standardizeQueryData();
 
         queryData[this.className()].whereNot = Object.assign(queryData[this.className()].whereNot, attrs);
     }
@@ -224,17 +223,17 @@ module.exports = class Model {
      * @param {Array} select
      */
     static gatherSelect(select) {
-        this.standertizeQueryData();
+        this.standardizeQueryData();
 
         queryData[this.className()].select = select;
     }
 
     /**
-     * Adds (inner right) joins for the tables using releation between models (hasOne, hasMany, belongsTo, hasAndBelongsToMany)
+     * Adds (inner right) joins for the tables using relation between models (hasOne, hasMany, belongsTo, hasAndBelongsToMany)
      * @param {Model|String} tables - can be sub-class of model or 'join' String
      */
     static joins(...tables) {
-        this.standertizeQueryData();
+        this.standardizeQueryData();
 
         const hasMany = this.hasMany ? this.hasMany() : [],
             hasOne = this.hasOne ? this.hasOne() : [],
@@ -251,8 +250,8 @@ module.exports = class Model {
             else if (belongsTo.includes(table))
                 joinQuery = `JOIN ON ${table.tableName()}.id = ${me.tableName()}.${table.className().toLowDash()}_id`;
             else if (hasAndBelongsToMany.includes(table)) {
-                let joindTable = [table.tableName(), me.tableName()].sort().join('_');
-                joinQuery = `JOIN ON ${me.tableName()}.id = ${joindTable}.${me.className().toLowDash()}_id`;
+                let joinedTable = [table.tableName(), me.tableName()].sort().join('_');
+                joinQuery = `JOIN ON ${me.tableName()}.id = ${joinedTable}.${me.className().toLowDash()}_id`;
             }
 
             queryData[this.className()].joins.push(joinQuery);
@@ -266,7 +265,7 @@ module.exports = class Model {
     static execute() {
         let me = this;
         return new Promise(function (resolve, reject) {
-            me.standertizeQueryData();
+            me.standardizeQueryData();
 
             let whereStatement = buildStatement(queryData[me.className()].where),
                 whereNotStatement = buildStatement(queryData[me.className()].whereNot, whereStatement.values.length + 1),
@@ -304,17 +303,17 @@ module.exports = class Model {
     }
 
     /**
-     * Clears the gevered query
+     * Clears the gathered query
      */
     static clearQueryData() {
-        this.standertizeQueryData();
+        this.standardizeQueryData();
         queryData[this.className()] = {};
     }
 
     /**
      * Set empty object (where, whereNot, select) for the model if not set
      */
-    static standertizeQueryData() {
+    static standardizeQueryData() {
         queryData[this.className()] = queryData[this.className()] || {};
         queryData[this.className()].where = queryData[this.className()].where || {};
         queryData[this.className()].whereNot = queryData[this.className()].whereNot || {};
@@ -332,8 +331,8 @@ module.exports = class Model {
     }
 
     /**
-     * Returns the table name, +className()+ dash and plural, for exemple: User => users, UserPhoto => user_photos)
-     * @return {String} table name, +className()+ dash and plural, for exemple: User => users, UserPhoto => user_photos)
+     * Returns the table name, +className()+ dash and plural, for example: User => users, UserPhoto => user_photos)
+     * @return {String} table name, +className()+ dash and plural, for example: User => users, UserPhoto => user_photos)
      */
     static tableName() {
         return this.className().toLowDash().plural();
