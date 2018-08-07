@@ -1,9 +1,10 @@
 {
     "development": {
         "user": "postgres",
-        "password": "postgres",
-        "database": "database_development",
-        "host": "127.0.0.1"
+        "password": "Aa123456",
+        "database": "bar_development",
+        "host": "127.0.0.1",
+        "port": 3211
     },
     "test": {
         "user": "postgres",

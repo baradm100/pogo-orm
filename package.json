@@ -1,6 +1,6 @@
 {
   "name": "pogo-orm",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Basic ORM build for and around postgres and node",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/baradm100/pogo-orm#readme",
   "dependencies": {
-    "pg": "^7.4.1"
+    "pg": "^7.4.3",
+    "pluralize": "^7.0.0"
   }
 }

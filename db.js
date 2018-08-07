@@ -1,11 +1,17 @@
-const pg = require('pg');
-
+const {
+    Pool,
+    Client
+} = require('pg');
 // create a config to configure both pooling behavior and client options
 const env = process.env.NODE_ENV || 'development';
 const config = require('./config/db.json')[env];
 
-//this initializes a connection pool
-const pool = new pg.Pool(config);
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'bar_development',
+    password: 'Aa123456',
+})
 
 pool.on('error', function (err, client) {
     // if an error is encountered by a client while it sits idle in the pool
@@ -19,7 +25,7 @@ pool.on('error', function (err, client) {
 });
 
 //export the query method for passing queries to the pool
-module.exports.query = function (text, values, callback) {
+module.exports.queryWithoutConnect = function (text, values, callback) {
     if (env === 'development')
         console.log('query:', text, values);
 
@@ -27,26 +33,20 @@ module.exports.query = function (text, values, callback) {
 };
 
 //export the query method for passing queries to the pool using new connection
-module.exports.queryWithConnect = function (text, values, callback) {
+module.exports.query = function (text, values, callback) {
     if (env === 'development')
         console.log('query:', text, values);
 
-    pool.connect(function (err, client, done) {
-        if (err)
-            return console.error('error fetching client from pool', err);
-
-        //use the client for executing the query
-        client.query(text, values, function (err, result) {
-            //call `done(err)` to release the client back to the pool (or destroy it if there is an error)
-            done(err);
-
-            if (err) {
-                console.error('error running query', err);
-            }
-
-            callback(err, result);
-            client.end();
-        });
+    pool.connect().then(client => {
+        return client.query(text, values)
+            .then(res => {
+                client.release();
+                callback(undefined, res);
+            })
+            .catch(e => {
+                client.release();
+                callback(e, undefined);
+            });
     });
 };
 
@@ -55,3 +55,35 @@ module.exports.queryWithConnect = function (text, values, callback) {
 module.exports.connect = function (callback) {
     return pool.connect(callback);
 };
+
+
+function exitHandler(options, err) {
+    if (options.cleanup) {
+        pool.end();
+    }
+    if (err) console.log(err.stack);
+    if (options.exit) process.exit();
+}
+
+//do something when app is closing
+process.on('exit', exitHandler.bind(null, {
+    cleanup: true
+}));
+
+//catches ctrl+c event
+process.on('SIGINT', exitHandler.bind(null, {
+    exit: true
+}));
+
+// catches "kill pid" (for example: nodemon restart)
+process.on('SIGUSR1', exitHandler.bind(null, {
+    exit: true
+}));
+process.on('SIGUSR2', exitHandler.bind(null, {
+    exit: true
+}));
+
+//catches uncaught exceptions
+process.on('uncaughtException', exitHandler.bind(null, {
+    exit: true
+}));
