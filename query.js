@@ -87,7 +87,7 @@ module.exports = class Query {
     _standardizeQueryStatements(type, statements) {
         statements.forEach((statement) => {
             if (Array.isArray(statement)) {
-                this.querySegments[type] = this.querySegments.where.concat(statement);
+                this.querySegments[type] = this.querySegments[type].concat(statement);
             } else if (typeof statement === 'object' && statement.constructor === Object) {
                 this.querySegments[type].push(statement);
             } else {

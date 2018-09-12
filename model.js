@@ -4,7 +4,7 @@ const {
 } = require('./helper');
 const Query = require('./query');
 
-class Model {
+module.exports = class Model {
     /**
      * Construct an instance of a record
      * @param {Object} attrs Attributes of the record
@@ -60,12 +60,3 @@ class Model {
     }
 }
 
-class User extends Model {
-    static hasMany()
-}
-
-let b = User.where({
-    id: 1
-});
-
-b.execute().then((rows) => console.log(rows[0]))
